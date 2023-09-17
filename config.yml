@@ -1,0 +1,125 @@
+# yaml-language-server: $schema=http://172.29.20.17:5000/api/config/schema.json
+mqtt:
+  host: pottedpork-hassio.duckdns.org
+  user: "{FRIGATE_MQTT_USER}"
+  password: "{FRIGATE_MQTT_PASSWORD}"
+
+detectors:
+  coral:
+    type: edgetpu
+    device: usb
+
+ffmpeg:
+  hwaccel_args: preset-rpi-64-h264
+
+record:
+  enabled: True
+  events:
+    retain:
+      default: 10
+
+snapshots:
+  enabled: True
+
+objects:
+  track:
+    - person
+    - dog
+    - cat
+    - car
+
+go2rtc:
+  streams:
+    east_gate:
+      - "ffmpeg:http://172.29.20.16/flv?port=1935&app=bcs&stream=channel0_main.bcs&user={FRIGATE_CAMERA_USER}&password={FRIGATE_CAMERA_PASSWORD}#video=copy#audio=copy#audio=opus"
+    east_gate_sub:
+      - "ffmpeg:http://172.29.20.16/flv?port=1935&app=bcs&stream=channel0_ext.bcs&user={FRIGATE_CAMERA_USER}&password={FRIGATE_CAMERA_PASSWORD}"
+    west_gate:
+      - "ffmpeg:http://172.29.20.15/flv?port=1935&app=bcs&stream=channel0_main.bcs&user={FRIGATE_CAMERA_USER}&password={FRIGATE_CAMERA_PASSWORD}#video=copy#audio=copy#audio=opus"
+    west_gate_sub:
+      - "ffmpeg:http://172.29.20.15/flv?port=1935&app=bcs&stream=channel0_ext.bcs&user={FRIGATE_CAMERA_USER}&password={FRIGATE_CAMERA_PASSWORD}"
+    front_porch:
+      - rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.171:554/Streaming/Channels/101
+    back_porch:
+      - rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.170:554/live
+  webrtc:
+    candidates:
+      - 172.29.20.17:8555
+      - stun:8555
+
+cameras:
+  front_porch:
+    ffmpeg:
+      inputs:
+        - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.171:554/Streaming/Channels/102
+          roles: 
+            - detect
+        - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.171:554/Streaming/Channels/101
+          roles:
+            - record
+            - rtmp
+    detect:
+      enabled: True
+      width: 1280
+      height: 720
+    record:
+      enabled: True
+      events:
+        retain:
+          default: 10
+
+  back_porch:
+    ffmpeg:
+      inputs:
+       - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.170:554/live
+         roles:
+           - detect
+           - record
+           - rtmp
+    detect:
+      width: 1280
+      height: 720
+      enabled: True
+    record:
+      enabled: True
+      events:
+        retain:
+          default: 10
+
+  east_gate:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/east_gate?video=copy&audio=aac
+          roles:
+            - record
+            - rtmp
+        - path: rtsp://127.0.0.1:8554/east_gate_sub?video=copy
+          roles: 
+            - detect
+    detect:
+        enabled: True
+    record:
+      enabled: True
+      events:
+        retain:
+          default: 10
+
+  west_gate:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/west_gate?video=copy&audio=aac
+          roles:
+            - record
+            - rtmp
+        - path: rtsp://127.0.0.1:8554/west_gate_sub?video=copy
+          roles: 
+            - detect
+    detect:
+      width: 1280
+      height: 720
+      enabled: True
+    record:
+      enabled: True
+      events:
+        retain:
+          default: 10
