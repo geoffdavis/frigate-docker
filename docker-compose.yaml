@@ -11,6 +11,8 @@ services:
       - /dev/video10:/dev/video10 # For hwaccel
       - /dev/video11:/dev/video11
       - /dev/video12:/dev/video12
+    device_cgroup_rules:
+      - "c 189:* rmw" # For Intel Compute Stick, see https://docs.frigate.video/configuration/detectors#intel-ncs2-vpu-and-myriad-x-setup
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config.yml:/config/config.yml

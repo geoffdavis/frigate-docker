@@ -12,6 +12,19 @@ detectors:
   coral:
     type: edgetpu
     device: usb
+#   # https://docs.frigate.video/configuration/detectors#intel-ncs2-vpu-and-myriad-x-setup
+#   myriad:
+#     type: openvino
+#     device: AUTO
+#     model:
+#       path: /openvino-model/ssdlite_mobilenet_v2.xml
+
+# model:
+#   width: 300
+#   height: 300
+#   input_tensor: nhwc
+#   input_pixel_format: bgr
+#   labelmap_path: /openvino-model/coco_91cl_bkgr.txt
 
 ffmpeg:
   hwaccel_args: preset-rpi-64-h264
