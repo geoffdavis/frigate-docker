@@ -4,6 +4,10 @@ mqtt:
   user: "{FRIGATE_MQTT_USER}"
   password: "{FRIGATE_MQTT_PASSWORD}"
 
+# logger:
+#   logs:
+#     frigate.record: debug
+
 detectors:
   coral:
     type: edgetpu
@@ -40,8 +44,12 @@ go2rtc:
       - "ffmpeg:http://172.29.20.15/flv?port=1935&app=bcs&stream=channel0_ext.bcs&user={FRIGATE_CAMERA_USER}&password={FRIGATE_CAMERA_PASSWORD}"
     front_porch:
       - rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.171:554/Streaming/Channels/101
+    front_porch_sub:
+      - rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.171:554/Streaming/Channels/102
     back_porch:
-      - rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.170:554/live
+      - rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.170:554/cam/realmonitor?channel=1&subtype=0
+    back_porch_sub:
+      - rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.170:554/cam/realmonitor?channel=1&subtype=1
   webrtc:
     candidates:
       - 172.29.20.17:8555
@@ -51,10 +59,12 @@ cameras:
   front_porch:
     ffmpeg:
       inputs:
-        - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.171:554/Streaming/Channels/102
+        - path: rtsp://127.0.0.1:8554/front_porch_sub?video=copy
+          input_args: preset-rtsp-restream
           roles: 
             - detect
-        - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.171:554/Streaming/Channels/101
+        - path: rtsp://127.0.0.1:8554/front_porch?video=copy&audio=aac
+          input_args: preset-rtsp-restream
           roles:
             - record
             - rtmp
@@ -71,14 +81,18 @@ cameras:
   back_porch:
     ffmpeg:
       inputs:
-       - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.29.20.170:554/live
-         roles:
-           - detect
-           - record
-           - rtmp
+        - path: rtsp://127.0.0.1:8554/back_porch_sub?video=copy
+          input_args: preset-rtsp-restream
+          roles: 
+            - detect
+        - path: rtsp://127.0.0.1:8554/back_porch?video=copy&audio=aac
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+            - rtmp
     detect:
-      width: 1280
-      height: 720
+      width: 704
+      height: 480
       enabled: True
     record:
       enabled: True
@@ -90,14 +104,18 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/east_gate?video=copy&audio=aac
+          input_args: preset-rtsp-restream
           roles:
             - record
             - rtmp
         - path: rtsp://127.0.0.1:8554/east_gate_sub?video=copy
+          input_args: preset-rtsp-restream
           roles: 
             - detect
     detect:
-        enabled: True
+      width: 640
+      height: 480
+      enabled: True
     record:
       enabled: True
       events:
@@ -108,15 +126,17 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/west_gate?video=copy&audio=aac
+          input_args: preset-rtsp-restream
           roles:
             - record
             - rtmp
         - path: rtsp://127.0.0.1:8554/west_gate_sub?video=copy
+          input_args: preset-rtsp-restream
           roles: 
             - detect
     detect:
-      width: 1280
-      height: 720
+      width: 640
+      height: 480
       enabled: True
     record:
       enabled: True

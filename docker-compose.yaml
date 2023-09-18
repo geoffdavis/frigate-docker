@@ -5,10 +5,12 @@ services:
     #privileged: true # this may not be necessary for all setups
     restart: unless-stopped
     image: ghcr.io/blakeblackshear/frigate:stable
-    shm_size: "128mb" # update for your cameras based on calculation above - 8 cams at 720p
+    shm_size: "192mb" # update for your cameras based on calculation above - 8 cams at 720p
     devices:
       - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
-      - /dev/video10 # For hwaccel
+      - /dev/video10:/dev/video10 # For hwaccel
+      - /dev/video11:/dev/video11
+      - /dev/video12:/dev/video12
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config.yml:/config/config.yml
