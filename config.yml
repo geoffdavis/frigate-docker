@@ -19,7 +19,7 @@ detectors:
 #     model:
 #       path: /openvino-model/ssdlite_mobilenet_v2.xml
 
-# model:
+# model: # Only used with OpenVINO, comment out when running the Coral EdgeTPU
 #   width: 300
 #   height: 300
 #   input_tensor: nhwc
