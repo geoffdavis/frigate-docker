@@ -134,6 +134,11 @@ cameras:
       events:
         retain:
           default: 10
+    zones:
+      inside:
+        coordinates: 334,480,640,480,483,225,246,305
+      walkway:
+        coordinates: 173,160,309,123,409,243,241,299
 
   west_gate:
     ffmpeg:
